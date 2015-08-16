@@ -1,18 +1,70 @@
 @import "fonts.css";
+@import "navigation.css";
+@import "mobile.css";
 
-body {
-  background: #ec008c;
-  color: #fff;
+#content-mask {
+  display: none;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  text-align: center;
 }
 
-h1 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  margin: 0;
-  font: 20vmin/1 HUGEAvantGardeBold;
-  letter-spacing: -0.06em;
-  text-align: center;
+@media (min-width: 768px) {
+    body {
+      background: #fff;
+      color: #fff;
+      margin: 0;
+    }
+
+    h1 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      margin: 0;
+      font: 20vmin/1 HUGEAvantGardeBold;
+      letter-spacing: -0.06em;
+      text-align: center;
+    }
+
+    #wrapper {
+    }
+
+    main {
+      width: 100%;
+      min-width: 1280px;
+      height: 640px;
+      background-image: url('/images/background-image.jpg');
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      min-height: 640px;
+    }
+
+    main .content {
+      font: 120px HUGEAvantGardeBold;
+      text-align: left;
+      padding: 100px;
+      padding-top: 145px;
+      margin: 0 auto;
+      width: 795px;
+    }
+
+    footer {
+      background-color: #fff;
+      color: black;
+      padding-top: 60px;
+      text-align: center;
+      font-family: Galaxie;
+      font-size: 24px;
+      height: 36px;
+    }
+
+    #content-mask {
+      top: 72px;
+    }
 }

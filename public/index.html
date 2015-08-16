@@ -2,9 +2,192 @@
 <html>
 <head>
   <title>HUGE NavExercise</title>
+  <link rel="stylesheet" href="/styles/reset.css">
   <link rel="stylesheet" href="/styles/main.css">
 </head>
 <body>
-<h1>Hello.</h1>
+	<div id="wrapper">
+        <div id="main-nav" class="navigation">
+			<div id="mobile-menu">
+                <input type="checkbox" id="hamburger"/>
+                <label class="menuicon" for="hamburger">
+                  <span></span>
+                </label>
+                <div class="container">
+	                <nav id="navigation" class="menu">
+	                    <div id="nav-logo"></div>
+	                </nav>
+	            </div>
+			</div>
+
+		</div>
+		<main>
+			<article class="content">Get paid for giving a shit.</article>
+		</main>
+		<footer class="footer-desktop">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor</footer>
+		<footer class="footer-mobile">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tincidunt eros in lobortis tempor. Nulla vel ultrices lacus, vel aliquam lectus. Sed convallis semper nisl ut iaculis. Aliquam erat volutpat. Cras tempor purus at orci tempor pellentesque. Pellentesque dui tortor, pulvinar laoreet diam volutpat, fringilla consectetur est. Suspendisse semper augue quis lacus luctus, sed vehicula tortor faucibus. Aenean eu risus a dui malesuada sagittis a a turpis. Vivamus lacinia ultrices diam eu vestibulum. Cras id eleifend mauris. Proin non ipsum a mi vestibulum gravida in a elit. Donec turpis lacus, dignissim at dictum vitae, ultrices non sem. Cras quis nisl vel libero rutrum dignissim ac nec metus. Donec pharetra efficitur metus, vitae laoreet augue dignissim nec.
+        </footer>
+        <div id="content-mask"></div>
+	</div>
 </body>
 </html>
+
+<script>
+
+/**
+ * Function that makes an http request to get the items that should be part
+ * of the site navigation
+ *
+ * @param  {string}   path
+ *   Api path for the request
+ * @param  {Function} callback
+ * @return {JSON}
+ *   JSON response representing the items in the nav.
+ */
+function getNavItems(path, callback) {
+	var httpRequest = new XMLHttpRequest();
+
+	httpRequest.onreadystatechange = function() {
+        if (httpRequest.readyState === 4) {
+            if (httpRequest.status === 200) {
+                var data = JSON.parse(httpRequest.responseText);
+                if (callback) callback(data);
+            }
+        }
+    };
+
+    // Get the information from path
+    httpRequest.open('GET', path);
+    httpRequest.send();
+}
+
+// Request the nav items and execute a callback with the parsed
+// result to build the HTML menu
+getNavItems('/api/nav.json', function(data) {
+
+	// Build the HTML for the navigation by looping into the
+	// retrieved elements
+	var items = [];
+	var mainMenu = document.getElementById('navigation');
+	var ul = document.createElement('ul');
+	ul.setAttribute('class', 'nav');
+
+	for (var i in data.items) {
+		var itemData = data.items[i];
+		var item = document.createElement('a');
+		var li = document.createElement('li');
+
+		item.setAttribute('href', itemData.url);
+		item.setAttribute('class', 'nav-item');
+		item.innerHTML = itemData.label;
+
+		// Create secondary nav if the item has any
+		var secondaryUl = document.createElement('ul');
+		secondaryUl.setAttribute('class', 'sec-nav-item-ul');
+
+		for (var j in itemData.items) {
+			var secItemData = itemData.items[j];
+			var secItem = document.createElement('a');
+			var secondaryLi = document.createElement('li');
+
+			secItem.setAttribute('href', secItemData.url);
+			secItem.setAttribute('class', 'sec-nav-item');
+			secItem.innerHTML = secItemData.label;
+
+			secondaryLi.appendChild(secItem);
+			secondaryUl.appendChild(secondaryLi);
+		}
+
+
+		// Add the created nav item as an li to the outer ul
+		li.setAttribute('class', 'nav-item-li');
+		li.appendChild(item);
+
+		if (itemData.items.length > 0) {
+			li.appendChild(secondaryUl);
+			li.className = li.className + " parent chevron bottom";
+		}
+
+		ul.appendChild(li);
+	}
+
+	// Append all the ul node as the menu (nav) contents
+	mainMenu.appendChild(ul);
+
+    onClickListener()
+});
+
+var isMobileToggle = false;
+// Attach onclick to main nav elements.
+onClickListener = function() {
+    var mainNavItems = document.getElementsByClassName("nav-item");
+    var mask = document.getElementById("content-mask");
+    for (index = 0; index < mainNavItems.length; ++index) {
+        //console.log(mainNavItems[index]);
+        mainNavItems[index].addEventListener("click", function() {
+            // Add active class
+            this.className = this.className + " active";
+
+            if (this.nextSibling != undefined || this.nextSibling != null) {
+
+            	for (var i = 0; i < this.nextSibling.childNodes.length; i++) {
+	                if (this.nextSibling.childNodes[i].tagName == "LI") {
+	                  li = this.nextSibling.childNodes[i];
+	                  li.childNodes[0].className = li.childNodes[0].className + " active";
+	                }
+	            }
+            }
+            mask.style.display = "block";
+        }, false);
+
+
+        mainNavItems[index].addEventListener("blur", function() {
+            // Add active class
+            this.className = "nav-item";
+
+            if (this.nextSibling != undefined || this.nextSibling != null) {
+	            for (var i = 0; i < this.nextSibling.childNodes.length; i++) {
+	                if (this.nextSibling.childNodes[i].tagName == "LI") {
+	                  li = this.nextSibling.childNodes[i];
+	                  li.childNodes[0].className = "sec-nav-item";
+	                }
+	            }
+	        }
+            mask.style.display = "none";
+        }, false);
+    }
+
+    var hamburger = document.getElementById("hamburger");
+    hamburger.addEventListener("click", function() {
+    	var mask = document.getElementById("content-mask");
+    	if (!isMobileToggle) {
+       		document.getElementById('navigation').style.display = "block";
+            mask.style.display = "block";
+    	} else {
+       		document.getElementById('navigation').style.display = "none";
+            mask.style.display = "none";
+    	}
+    	isMobileToggle=!isMobileToggle;
+    }, false);
+    hamburger.addEventListener("blur", function() {
+       	document.getElementById('navigation').style.display = "none";
+    	isMobileToggle=false;
+    }, false);
+}
+
+window.onresize = function(event) {
+    // Get new height and width to trigger events for mobile or desktop versions
+    var width = window.innerWidth || document.documentElement.clientWidth
+    || document.body.clientWidth;
+
+    var height = window.innerHeight || document.documentElement.clientHeight
+    || document.body.clientHeight;
+
+    if ( width && width < 768 ) {
+        // Mobile Version.
+        console.log("Mobile (?) is resizing", width, height);
+    }
+};
+
+</script>
